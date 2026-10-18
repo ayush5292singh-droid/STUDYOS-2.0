@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d1b">
+<title>STUDYOS — Your Personal Study Intelligence</title>
+<style>
+:root{
+  --bg:#080d1b;--panel:#10182b;--panel2:#151f36;
+  --line:#25334d;--text:#f3f6ff;--muted:#9ba9c4;
+  --cyan:#49e3f4;--violet:#a18aff;--green:#65e6b0;
+  --red:#ff8297;--radius:20px
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#111c37 0,#080d1b 55%);
+color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,textarea,select{width:100%;background:#0b1222;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--text);margin:5px 0 12px}
+textarea{resize:vertical;min-height:90px}
+label{font-size:13px;color:var(--muted)}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(27px,5vw,42px);line-height:1.12;letter-spacing:-1px}
+h2{font-size:22px;letter-spacing:-.4px}
+h3{font-size:16px}
+small,.muted{color:var(--muted)}
+button:active{transform:scale(.98)}
+.primary,.secondary,.danger,.navbtn,.chip{border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:var(--text);background:var(--panel2)}
+.primary{background:linear-gradient(120deg,#49e3f4,#8e9bff);color:#07111d;border:0;font-weight:800}
+.secondary:hover,.navbtn:hover,.chip:hover{border-color:var(--cyan)}
+.danger{color:var(--red)}
+button.full{width:100%}
+a{color:var(--cyan)}
+.hidden{display:none!important}
+#onboarding{max-width:580px;margin:auto;padding:24px 18px;min-height:100dvh;display:flex;align-items:center}
+.onboard-card{width:100%;padding:clamp(22px,5vw,40px);background:rgba(16,24,43,.94);border:1px solid var(--line);border-radius:28px;box-shadow:0 25px 100px #0005}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:2px}
+.logo-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#07111d;font-weight:1000}
+.brand-gradient{background:linear-gradient(100deg,var(--cyan),var(--violet));color:transparent;background-clip:text}
+.progress{height:4px;background:#25334d;border-radius:10px;margin:22px 0}
+.progress span{display:block;height:100%;background:var(--cyan);border-radius:10px;transition:width .3s}
+.app{max-width:1500px;margin:auto;padding:18px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px}
+.sidebar{position:sticky;top:18px;height:calc(100dvh - 36px);background:#0d1425;border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.sidebar .logo{margin-bottom:18px}
+.navbtn{width:100%;text-align:left;background:transparent;display:flex;align-items:center;gap:12px;margin:3px 0}
+.navbtn.active{background:#172b40;border-color:#34556b;color:var(--cyan)}
+.navicon{width:23px;text-align:center}
+.side-bottom{margin-top:auto}
+.main{min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.topbar h2{margin:0}
+.top-actions{display:flex;gap:8px;align-items:center}
+.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#263354;color:var(--cyan);font-weight:800}
+.view{display:none;animation:fade .2s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.card{background:linear-gradient(145deg,#111a2d,#0d1425);border:1px solid var(--line);border-radius:var(--radius);padding:18px;min-width:0}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-7{grid-column:span 7}.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}
+.eyebrow{color:var(--cyan);font-size:11px;text-transform:uppercase;letter-spacing:1.8px;font-weight:800}
+.big-number{font-size:30px;font-weight:850;letter-spacing:-1px}
+.flex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.stack{display:grid;gap:12px}
+.hero{background:linear-gradient(120deg,#14253a,#191b39);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-55px;top:-70px;background:#49e3f422;filter:blur(5px)}
+.hero>*{position:relative;z-index:1}
+.tag{font-size:11px;border:1px solid #3d526c;border-radius:20px;padding:4px 9px;color:var(--muted);display:inline-block}
+.tag.cyan{color:var(--cyan);border-color:#31616c}
+.tag.green{color:var(--green);border-color:#285e4c}
+.tag.pink{color:var(--red);border-color:#654052}
+.meter{height:7px;background:#26334b;border-radius:10px;overflow:hidden;margin:10px 0}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--violet));border-radius:10px}
+.item{padding:13px 0;border-bottom:1px solid #202c42}
+.item:last-child{border-bottom:0}
+.item-title{font-weight:700}
+.item-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.empty{padding:22px 10px;text-align:center;color:var(--muted)}
+.stat-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:#203049;font-size:18px}
+.chat{height:330px;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:12px 0}
+.bubble{max-width:94%;padding:12px 14px;border-radius:16px;background:#18243a;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.user{align-self:flex-end;background:#20394b;border:1px solid #31576b}
+.chat-form{display:flex;gap:8px;align-items:center}
+.chat-form input{margin:0;min-width:0}
+.quick-prompts{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.chip{font-size:12px;padding:8px 10px}
+.task-check{width:19px;height:19px;accent-color:var(--cyan);margin:0;flex-shrink:0}
+.task-row{display:flex;align-items:flex-start;gap:10px}
+.done{text-decoration:line-through;color:var(--muted)}
+.flashcard{min-height:170px;display:grid;place-items:center;text-align:center;background:linear-gradient(135deg,#14283c,#242044);border:1px solid #394461;border-radius:18px;padding:25px;font-size:20px;font-weight:700}
+.option{display:block;width:100%;text-align:left;margin:8px 0;padding:12px;border:1px solid var(--line);background:#0c1425;color:var(--text);border-radius:12px}
+.option:hover{border-color:var(--cyan)}
+.option.correct{border-color:var(--green);background:#123126}
+.option.wrong{border-color:var(--red)}
+.bottom-nav{display:none}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#eafcff;color:#07111d;padding:11px 17px;border-radius:12px;z-index:20;box-shadow:0 8px 35px #0006;font-weight:700;max-width:90%;text-align:center}
+footer{font-size:11px;color:var(--muted);text-align:center;padding:22px 0}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+@media(max-width:850px){
+ .app{display:block;padding:12px 12px 88px}
+ .sidebar{display:none}
+ .topbar{margin-bottom:16px}
+ .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:10;display:flex;justify-content:space-around;gap:3px;padding:8px 4px calc(8px + env(safe-area-inset-bottom));background:#0c1323f5;backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+ .bottom-nav button{background:transparent;border:0;color:var(--muted);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px;min-width:0}
+ .bottom-nav button span{font-size:18px}
+ .bottom-nav button.active{color:var(--cyan)}
+ .span-8,.span-7,.span-6,.span-5,.span-4{grid-column:span 12}
+}
+@media(min-width:500px) and (max-width:850px){
+ .span-6,.span-4{grid-column:span 6}
+ .span-8,.span-7,.span-5{grid-column:span 12}
+}
+@media(max-width:380px){
+ .card{padding:14px}.app{padding-left:9px;padding-right:9px}
+ .topbar h2{font-size:18px}
+}
+</style>
+</head>
+<body>
+<section id="onboarding">
+  <div class="onboard-card">
+    <div class="logo"><div class="logo-icon">S</div> STUDY<span class="brand-gradient">OS</span></div>
+    <div class="progress"><span id="onProgress" style="width:25%"></span></div>
+    <div id="onContent"></div>
+  </div>
+</section>
+
+<div id="application" class="app hidden">
+  <aside class="sidebar">
+    <div class="logo"><div class="logo-icon">S</div> STUDY<span class="brand-gradient">OS</span></div>
+    <div class="eyebrow">Your learning space</div>
+    <div id="sideNav"></div>
+    <div class="side-bottom">
+      <button class="navbtn" data-page="pro"><span class="navicon">✦</span> STUDYOS Pro</button>
+      <button class="navbtn" data-page="settings"><span class="navicon">⚙</span> Settings</button>
+      <div class="item-meta">Offline-first · Your data stays on this device</div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">PERSONAL STUDY INTELLIGENCE</div><h2 id="pageTitle">Dashboard</h2></div>
+      <div class="top-actions"><button class="secondary" data-page="tutor" title="Study tutor">✧ <span class="hide-small">Tutor</span></button><div class="avatar" id="avatar">S</div></div>
+    </header>
+    <section class="view active" id="page-dashboard"></section>
+    <section class="view" id="page-tasks"></section>
+    <section class="view" id="page-tutor"></section>
+    <section class="view" id="page-notes"></section>
+    <section class="view" id="page-flashcards"></section>
+    <section class="view" id="page-quiz"></section>
+    <section class="view" id="page-focus"></section>
+    <section class="view" id="page-analytics"></section>
+    <section class="view" id="page-pro"></section>
+    <section class="view" id="page-settings"></section>
+    <footer>STUDYOS · Offline study tools · No account or API required</footer>
+  </main>
+</div>
+<nav class="bottom-nav" id="bottomNav">
+  <button data-page="dashboard" class="active"><span>⌂</span>Home</button>
+  <button data-page="tasks"><span>☑</span>Tasks</button>
+  <button data-page="tutor"><span>✧</span>Tutor</button>
+  <button data-page="notes"><span>▤</span>Notes</button>
+  <button data-page="focus"><span>◷</span>Focus</button>
+</nav>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+"use strict";
+const KEY="studyos_v1";
+const defaults={
+ name:"Student",age:"",onboarded:false,pro:false,proDemo:false,
+ tasks:[],notes:[],cards:[],quizzes:[],sessions:[],topicStats:{},
+ tutorHistory:[],focusMinutes:0,streak:0,lastStudyDate:"",settings:{dailyGoal:120}
+};
+let data=loadData(),page="dashboard",quizState=null,cardIndex=0,cardBack=false;
+let timer=null,secondsLeft=25*60,running=false;
+function loadData(){
+ try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return {...defaults}}
+}
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){notify("Storage is full. Export your data or remove large items.")}
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function notify(s){
+ const t=document.getElementById("toast");t.textContent=s;t.classList.remove("hidden");
+ clearTimeout(notify.timeout);notify.timeout=setTimeout(()=>t.classList.add("hidden"),2600)
+}
+function today(){return new Date().toISOString().slice(0,10)}
+function dateLabel(d){return d?new Date(d+"T12:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"}):"No date"}
+function fmtMins(n){return `${Math.floor(n/60)}h ${n%60}m`}
+function pct(a,b){return b?Math.round(a/b*100):0}
+function isPro(){return data.pro===true}
+const navItems=[
+ ["dashboard","⌂","Dashboard"],["tasks","☑","Tasks & Planner"],
+ ["tutor","✧","Offline Tutor"],["notes","▤","Notes"],
+ ["flashcards","▧","Flashcards"],["quiz","✓","Quiz Lab"],
+ ["focus","◷","Focus Room"],["analytics","▥","Analytics"]
+];
+function buildNav(){
+ const html=navItems.map(([p,i,n])=>`<button class="navbtn ${page===p?"active":""}" data-page="${p}"><span class="navicon">${i}</span>${n}</button>`).join("");
+ document.getElementById("sideNav").innerHTML=html;
+ document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page))
+}
+function go(p){
+ page=p;
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="page-"+p));
+ document.getElementById("pageTitle").textContent=([...navItems,...[["pro","","STUDYOS Pro"],["settings","","Settings"]]].find(x=>x[0]===p)||[])[2]||p;
+ buildNav();renderPage();window.scrollTo({top:0,behavior:"smooth"})
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-page]");
+ if(b){go(b.dataset.page);return}
+ const a=e.target.closest("[data-action]");
+ if(a)actions(a.dataset.action,a)
+});
+function renderPage(){
+ const fn={dashboard:renderDashboard,tasks:renderTasks,tutor:renderTutor,notes:renderNotes,flashcards:renderFlashcards,quiz:renderQuiz,focus:renderFocus,analytics:renderAnalytics,pro:renderPro,settings:renderSettings}[page];
+ if(fn)fn()
+}
+function card(title,body,cls="span-6"){
+ return `<section class="card ${cls}"><h3>${title}</h3>${body}</section>`
+}
+function stat(icon,label,value,detail){
+ return `<section class="card span-4"><div class="flex between"><div><div class="muted">${label}</div><div class="big-number">${value}</div></div><div class="stat-icon">${icon}</div></div><div class="item-meta">${detail}</div></section>`
+}
+function taskLine(t){
+ return `<div class="item task-row"><input class="task-check" type="checkbox" ${t.done?"checked":""} data-action="toggle-task" data-id="${t.id}" aria-label="Complete task"><div style="flex:1;min-width:0"><div class="item-title ${t.done?"done":""}">${esc(t.title)}</div><div class="item-meta">${esc(t.subject||"General")} · ${dateLabel(t.due)} · ${t.minutes||30} min</div></div><button class="secondary" data-action="delete-task" data-id="${t.id}">×</button></div>`
+}
+function smartRecommendations(){
+ const open=data.tasks.filter(t=>!t.done);
+ const sorted=[...open].sort((a,b)=>{
+  const da=a.due||"9999",db=b.due||"9999";
+  return da.localeCompare(db)||(Number(b.priority||2)-Number(a.priority||2))
+ });
+ const weak=Object.entries(data.topicStats).sort((a,b)=>(a[1].confidence||0)-(b[1].confidence||0))[0];
+ const rec=[];
+ if(sorted.length)rec.push({title:sorted[0].title,why:sorted[0].due&&sorted[0].due<=today()?"Due now or overdue":"Your next priority",subject:sorted[0].subject||"General"});
+ if(weak&&weak[1].confidence<4)rec.push({title:"Revise "+weak[0],why:"Your confidence rating is low",subject:"Revision"});
+ if(!rec.length)rec.push({title:"Create your next study task",why:"A clear next step makes studying easier",subject:"Planning"});
+ return rec
+}
+function renderDashboard(){
+ const open=data.tasks.filter(t=>!t.done),done=data.tasks.filter(t=>t.done);
+ const todayMins=data.sessions.filter(s=>s.date===today()).reduce((n,s)=>n+s.minutes,0);
+ const rec=smartRecommendations();
+ const due=open.filter(t=>t.due&&t.due<=today()).length;
+ document.getElementById("page-dashboard").innerHTML=`
+ <div class="grid">
+ <section class="card hero span-12">
+  <div class="eyebrow">YOUR PERSONAL LEARNING OS</div>
+  <h1>Make every study<br><span class="brand-gradient">session count.</span></h1>
+  <p class="muted">Welcome back, ${esc(data.name)}. Your offline study engine is ready.</p>
+  <div class="flex"><button class="primary" data-page="tutor">✧ Ask Study Tutor</button><button class="secondary" data-page="tasks">+ Plan a session</button></div>
+  <div class="item-meta" style="margin-top:12px">Recommendations use your saved tasks, topics and progress—not live AI.</div>
+ </section>
+ ${stat("◷","Study time today",fmtMins(todayMins),`Daily goal: ${data.settings.dailyGoal} minutes`)}
+ ${stat("☑","Tasks remaining",open.length,`${done.length} completed in total`)}
+ ${stat("⚡","Overdue tasks",due,due?"Consider handling the most urgent task":"You're clear for now")}
+ ${card("✦ Your next best move",rec.map(r=>`<div class="item"><div class="eyebrow">${esc(r.why)}</div><div class="item-title">${esc(r.title)}</div><div class="item-meta">${esc(r.subject)}</div></div>`).join("")+`<button class="secondary full" data-page="tasks">Open smart planner →</button>`,"span-7")}
+ ${card("Quick launch",`<div class="stack">
+ <button class="secondary full" data-page="focus">◷ Start a focus session</button>
+ <button class="secondary full" data-page="quiz">✓ Take a practice quiz</button>
+ <button class="secondary full" data-page="flashcards">▧ Review flashcards</button>
+ <button class="secondary full" data-page="notes">▤ Write study notes</button>
+ </div>`,"span-5")}
+ ${card("Your progress",`<div class="flex between"><span>Tasks completed</span><b>${pct(done.length,data.tasks.length)}%</b></div><div class="meter"><span style="width:${pct(done.length,data.tasks.length)}%"></span></div><div class="flex between"><span>Notes saved</span><b>${data.notes.length}</b></div><div class="flex between"><span>Flashcards created</span><b>${data.cards.length}</b></div><div class="flex between"><span>Study sessions</span><b>${data.sessions.length}</b></div><button class="secondary full" data-page="analytics">Explore analytics →</button>`,"span-6")}
+ ${card("Study engine status",`<div class="flex"><span class="tag green">● Offline engine active</span><span class="tag">${isPro()?"Pro demo":"Free"}</span></div><p class="muted" style="margin-top:12px">Your planner and study tools run on this device. No AI API or account is connected.</p>`,"span-6")}
+ </div>`;
+}
+function renderTasks(){
+ const open=data.tasks.filter(t=>!t.done),done=data.tasks.filter(t=>t.done);
+ document.getElementById("page-tasks").innerHTML=`<div class="grid">
+ ${card("Create a task",`<form id="taskForm" class="stack">
+ <label>Task or homework title</label><input name="title" required maxlength="140" placeholder="e.g. Revise algebra identities">
+ <div class="grid"><div class="span-6"><label>Subject</label><input name="subject" placeholder="Mathematics"></div><div class="span-6"><label>Due date</label><input type="date" name="due" min="2020-01-01"></div></div>
+ <div class="grid"><div class="span-6"><label>Estimated minutes</label><input type="number" name="minutes" value="30" min="5" max="600"></div><div class="span-6"><label>Priority</label><select name="priority"><option value="1">Low</option><option value="2" selected>Normal</option><option value="3">High</option></select></div></div>
+ <button class="primary">+ Add to planner</button></form>`,"span-5")}
+ ${card("Smart planning tips",`<div class="item"><b>1. Start with urgency</b><div class="item-meta">Tasks due today or overdue rise to the top.</div></div><div class="item"><b>2. Keep sessions manageable</b><div class="item-meta">Split long chapters into smaller tasks.</div></div><div class="item"><b>3. Review weak topics</b><div class="item-meta">Rate your confidence in Analytics to get revision suggestions.</div></div>`,"span-7")}
+ ${card(`To do · ${open.length}`,open.length?open.sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")).map(taskLine).join(""):`<div class="empty">All clear. Add your next task above.</div>`,"span-12")}
+ ${card(`Completed · ${done.length}`,done.length?done.map(taskLine).join(""):`<div class="empty">Completed tasks will appear here.</div>`,"span-12")}
+ </div>`;
+ document.getElementById("taskForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  data.tasks.push({id:uid(),title:f.get("title").trim(),subject:f.get("subject").trim()||"General",due:f.get("due"),minutes:+f.get("minutes")||30,priority:+f.get("priority"),done:false});
+  save();renderTasks();notify("Task added to your planner")
+ };
+}
+const tutorWelcome="Hi! I'm your offline Study Tutor. I can help with supported topics, create practice questions, and work with your saved notes. I don't have general-purpose AI or internet access. Try asking: “explain fractions”, “quiz me on algebra”, or “make a study plan”.";
+function tutorAnswer(input){
+ const q=input.toLowerCase().trim();
+ const topics=[
+  {keys:["fraction","fractions"],title:"Fractions",text:"A fraction represents part of a whole. For addition or subtraction, first use a common denominator. Example: 1/4 + 1/4 = 2/4 = 1/2. For multiplication, multiply the numerators and denominators. For division, multiply by the reciprocal."},
+  {keys:["percentage","percent"],title:"Percentages",text:"Percent means “out of 100”. To find p% of a number, calculate p/100 × the number. Example: 20% of 150 = 20/100 × 150 = 30. To convert a fraction to a percentage, multiply it by 100%."},
+  {keys:["algebra","identit","factorisation","factorization"],title:"Algebra",text:"Useful identities:\n(a+b)² = a² + 2ab + b²\n(a−b)² = a² − 2ab + b²\na²−b² = (a−b)(a+b)\nTo factorise, look for a common factor or a known identity. Expand your answer to check it."},
+  {keys:["linear equation","equation"],title:"Equations",text:"An equation is like a balanced scale. Whatever operation you perform on one side, perform on the other. Example: 3x + 5 = 20 → 3x = 15 → x = 5. Check by substituting x = 5 into the original equation."},
+  {keys:["photosynthesis"],title:"Photosynthesis",text:"Photosynthesis is the process plants use to make food. Using light energy, chlorophyll, carbon dioxide and water, plants produce glucose and release oxygen. Simplified equation: carbon dioxide + water → glucose + oxygen (in the presence of light and chlorophyll)."},
+  {keys:["newton","force","motion"],title:"Force and motion",text:"A force can change an object's motion or shape. Newton's second law is F = ma: net force equals mass multiplied by acceleration. SI unit of force: newton (N). For school problems, identify the mass and acceleration, then use consistent units."},
+  {keys:["skeleton","bones"],title:"Human skeleton",text:"The adult human skeleton typically has 206 bones. The axial skeleton includes the skull, vertebral column and rib cage. The appendicular skeleton includes the limbs and the shoulder and pelvic girdles. Bones support the body, protect organs and help movement."},
+  {keys:["simple interest","interest"],title:"Simple interest",text:"Simple Interest = (Principal × Rate × Time) / 100, when rate is per year and time is in years. Amount = Principal + Simple Interest. Always check the time unit before substituting values."},
+  {keys:["direct variation","inverse variation","variation"],title:"Variation",text:"Direct variation: y = kx, so y/x is constant. If x doubles, y doubles. Inverse variation: y = k/x, so xy is constant. If x doubles, y halves. Use the relationship stated in the question to find k."},
+  {keys:["probability"],title:"Probability",text:"For equally likely outcomes, Probability = number of favourable outcomes / total number of possible outcomes. A probability lies between 0 and 1. Probability 0 means impossible; probability 1 means certain."},
+  {keys:["area","triangle"],title:"Triangle area",text:"Area of a triangle = 1/2 × base × perpendicular height. Make sure the height is perpendicular to the chosen base. Area is expressed in square units."},
+  {keys:["divisibility","divisible by 9"],title:"Divisibility rule for 9",text:"An integer is divisible by 9 if the sum of its digits is divisible by 9. Example: 729 → 7+2+9=18, and 18 is divisible by 9, so 729 is divisible by 9."}
+ ];
+ const found=topics.find(t=>t.keys.some(k=>q.includes(k)));
+ if(q.includes("plan")||q.includes("what should i study")||q.includes("revise")){
+  const rec=smartRecommendations();
+  return "Here is your local study recommendation:\n\n"+rec.map((r,i)=>`${i+1}. ${r.title} — ${r.why}`).join("\n")+"\n\nAdd tasks and topic confidence ratings to make this recommendation more useful."
+ }
+ if(q.includes("quiz me")||q.includes("practice questions")||q.includes("test me")){
+  return "Let's practise! Open Quiz Lab to generate a built-in mathematics quiz, or add flashcards and use them for self-testing. I can generate questions only for the topics included in this offline version."
+ }
+ if(q.includes("my notes")||q.includes("search notes")){
+  const matches=data.notes.filter(n=>(n.title+" "+n.body+" "+n.subject).toLowerCase().includes(q.replace(/my notes|search notes/g,"").trim()));
+  return matches.length?matches.slice(0,4).map(n=>`${n.title} (${n.subject})\n${n.body.slice(0,450)}`).join("\n\n"):"I couldn't find matching saved notes. Open Notes to create notes or try a more specific keyword."
+ }
+ if(found)return found.title+"\n\n"+found.text+"\n\nCheck your school textbook for the exact terminology and depth required by your syllabus.";
+ if(q.includes("hello")||q==="hi"||q.startsWith("hey"))return "Hey, "+data.name+"! What are you studying today? Try asking me about fractions, percentages, algebra, equations, photosynthesis, force and motion, the skeleton, simple interest, variation or probability.";
+ if(q.includes("help")||q.includes("what can you")){
+  return "I can help with these built-in topics:\n• Fractions and percentages\n• Algebra identities and equations\n• Simple interest and variation\n• Probability and divisibility by 9\n• Triangle area\n• Photosynthesis, force and motion, human skeleton\n\nI can also recommend your next task and search your saved notes. This is a small offline knowledge bank, not a general AI chatbot."
+ }
+ return "I don't have a built-in explanation for that topic yet. This offline tutor has a limited knowledge bank, so it may not answer every question accurately. Try asking about fractions, percentages, algebra, equations, photosynthesis, force and motion, the skeleton, simple interest, variation or probability—or add your own notes in Notes."
+}
+function renderTutor(){
+ const history=data.tutorHistory.slice(-20);
+ document.getElementById("page-tutor").innerHTML=`<div class="grid">
+ ${card("✧ Offline Study Tutor",`<div class="flex"><span class="tag green">Runs on device</span><span class="tag">No API</span><span class="tag">Limited knowledge bank</span></div>
+ <div id="chat" class="chat">${history.map(m=>`<div class="bubble ${m.role==="user"?"user":""}">${esc(m.text)}</div>`).join("")||`<div class="bubble">${esc(tutorWelcome)}</div>`}</div>
+ <div class="quick-prompts">${["Explain fractions","Explain algebra identities","Explain photosynthesis","Make a study plan"].map(x=>`<button class="chip" data-action="ask-prompt" data-prompt="${esc(x)}">${esc(x)}</button>`).join("")}</div>
+ <form id="chatForm" class="chat-form"><input id="chatInput" placeholder="Ask about a supported topic…" maxlength="500" required aria-label="Ask the offline tutor"><button class="primary">Send</button></form>
+ <div class="item-meta" style="margin-top:10px">Answers come from built-in rules and educational notes. There is no general-purpose AI model connected.</div>`,"span-8")}
+ ${card("Tutor toolkit",`<div class="stack"><button class="secondary full" data-action="ask-prompt" data-prompt="What should I study next?">✦ Recommend next study task</button><button class="secondary full" data-page="notes">▤ Open my notes</button><button class="secondary full" data-page="quiz">✓ Practise a quiz</button><button class="secondary full" data-action="clear-chat">Clear conversation</button></div>`,"span-4")}
+ </div>`;
+ const chat=document.getElementById("chat");chat.scrollTop=chat.scrollHeight;
+ document.getElementById("chatForm").onsubmit=e=>{e.preventDefault();ask(document.getElementById("chatInput").value)};
+}
+function ask(q){
+ q=q.trim();if(!q)return;
+ data.tutorHistory.push({role:"user",text:q},{role:"assistant",text:tutorAnswer(q)});
+ data.tutorHistory=data.tutorHistory.slice(-40);save();renderTutor()
+}
+function renderNotes(){
+ document.getElementById("page-notes").innerHTML=`<div class="grid">
+ ${card("Create a study note",`<form id="noteForm" class="stack"><label>Note title</label><input name="title" required maxlength="120" placeholder="Chapter 3 — Key ideas"><label>Subject</label><input name="subject" placeholder="Science"><label>Notes</label><textarea name="body" required maxlength="15000" placeholder="Write your definitions, examples and key points…"></textarea><button class="primary">Save note</button></form>`,"span-5")}
+ ${card("Your knowledge library",`<input id="noteSearch" placeholder="Search titles, subjects and content…"><div id="noteList"></div>`,"span-7")}
+ </div>`;
+ function listNotes(){
+  const q=document.getElementById("noteSearch").value.toLowerCase();
+  const list=data.notes.filter(n=>(n.title+" "+n.subject+" "+n.body).toLowerCase().includes(q));
+  document.getElementById("noteList").innerHTML=list.length?list.slice().reverse().map(n=>`<div class="item"><div class="flex between"><b>${esc(n.title)}</b><button class="danger" data-action="delete-note" data-id="${n.id}">Delete</button></div><div class="item-meta">${esc(n.subject)} · ${dateLabel(n.date)}</div><p style="white-space:pre-wrap;margin:10px 0">${esc(n.body.slice(0,900))}${n.body.length>900?"…":""}</p><div class="flex"><button class="secondary" data-action="note-to-card" data-id="${n.id}">Make flashcard</button><button class="secondary" data-action="note-to-quiz" data-id="${n.id}">Create quiz from note</button></div></div>`).join(""):`<div class="empty">No matching notes yet.</div>`
+ }
+ document.getElementById("noteSearch").oninput=listNotes;
+ document.getElementById("noteForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  if(!isPro()&&data.notes.length>=20){notify("Free limit reached: 20 notes. See Pro preview.");return}
+  data.notes.push({id:uid(),title:f.get("title").trim(),subject:f.get("subject").trim()||"General",body:f.get("body").trim(),date:today()});save();renderNotes();notify("Note saved on this device")
+ };
+ listNotes()
+}
+function renderFlashcards(){
+ const all=data.cards;
+ const current=all[cardIndex%Math.max(1,all.length)];
+ document.getElementById("page-flashcards").innerHTML=`<div class="grid">
+ ${card("Build a flashcard",`<form id="cardForm" class="stack"><label>Question / front</label><textarea name="front" required maxlength="1200" placeholder="What is photosynthesis?"></textarea><label>Answer / back</label><textarea name="back" required maxlength="2500" placeholder="The process plants use to make food…"></textarea><label>Subject</label><input name="subject" placeholder="Biology"><button class="primary">Add flashcard</button></form>`,"span-5")}
+ ${card(`Revision deck · ${all.length} cards`,all.length?`<div class="flashcard" id="flashContent">${esc(cardBack?current.back:current.front)}</div><div class="flex between" style="margin-top:12px"><button class="secondary" data-action="card-prev">← Previous</button><span class="muted">${cardIndex%all.length+1} / ${all.length}</span><button class="secondary" data-action="card-next">Next →</button></div><div class="flex" style="margin-top:12px"><button class="primary" data-action="card-flip">Flip card</button><button class="secondary" data-action="card-known" data-id="${current.id}">I knew this</button><button class="danger" data-action="delete-card" data-id="${current.id}">Delete</button></div>`:`<div class="empty">Add your first flashcard to begin revision.</div>`,"span-7")}
+ ${card("How to use active recall",`<p class="muted">1. Read the question.</p><p class="muted">2. Say the answer before flipping.</p><p class="muted">3. Repeat difficult cards later.</p><p class="muted">Flashcards are stored locally in this browser.</p>`,"span-12")}
+ </div>`;
+ document.getElementById("cardForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  if(!isPro()&&data.cards.length>=50){notify("Free limit reached: 50 cards. See Pro preview.");return}
+  data.cards.push({id:uid(),front:f.get("front").trim(),back:f.get("back").trim(),subject:f.get("subject").trim()||"General",confidence:0});save();cardIndex=data.cards.length-1;cardBack=false;renderFlashcards();notify("Flashcard added")
+ };
+}
+const quizBank=[
+ {q:"What is 25% of 200?",o:["25","40","50","75"],a:2,why:"25% = 1/4, and 200 ÷ 4 = 50.",topic:"Percentages"},
+ {q:"Which is equal to a² − b²?",o:["(a−b)²","(a+b)(a−b)","a²+b²","(a+b)²"],a:1,why:"Difference of squares: a² − b² = (a+b)(a−b).",topic:"Algebra"},
+ {q:"An adult human skeleton typically has how many bones?",o:["106","206","306","406"],a:1,why:"An adult human skeleton typically has 206 bones.",topic:"Skeleton"},
+ {q:"What is the SI unit of force?",o:["Joule","Watt","Newton","Pascal"],a:2,why:"Force is measured in newtons (N).",topic:"Force"},
+ {q:"A fair coin is tossed once. What is P(heads)?",o:["0","1/4","1/2","1"],a:2,why:"One favourable result out of two equally likely results gives 1/2.",topic:"Probability"},
+ {q:"Which gas do plants absorb for photosynthesis?",o:["Oxygen","Carbon dioxide","Hydrogen","Helium"],a:1,why:"Plants use carbon dioxide and water to produce glucose in photosynthesis.",topic:"Photosynthesis"},
+ {q:"If y = 3x, what is y when x = 4?",o:["7","12","16","34"],a:1,why:"Substitute x = 4: y = 3 × 4 = 12.",topic:"Variation"},
+ {q:"What is the simple interest on ₹1000 at 5% per year for 2 years?",o:["₹50","₹100","₹150","₹200"],a:1,why:"SI = PRT/100 = 1000 × 5 × 2 / 100 = ₹100.",topic:"Simple Interest"},
+ {q:"Solve: 3x + 5 = 20.",o:["3","5","8","15"],a:1,why:"Subtract 5 to get 3x = 15, then divide by 3: x = 5.",topic:"Equations"},
+ {q:"What is 1/4 + 1/4?",o:["1/8","1/4","1/2","1"],a:2,why:"Add numerators with the same denominator: 2/4 = 1/2.",topic:"Fractions"}
+];
+function renderQuiz(){
+ const el=document.getElementById("page-quiz");
+ if(quizState){
+  const qs=quizState.questions,idx=quizState.idx;
+  if(idx>=qs.length){
+   const score=quizState.answers.filter((a,i)=>a===qs[i].a).length;
+   el.innerHTML=`<div class="grid">${card("Quiz completed",`<div class="big-number">${score} / ${qs.length}</div><div class="meter"><span style="width:${pct(score,qs.length)}%"></span></div><p>${pct(score,qs.length)>=80?"Great work!":pct(score,qs.length)>=50?"Good effort. Review the explanations below.":"Keep practising. Review each explanation and try again."}</p>${qs.map((q,i)=>`<div class="item"><b>${i+1}. ${esc(q.q)}</b><div class="item-meta">Your answer: ${q.o[quizState.answers[i]]===undefined?"Not answered":esc(q.o[quizState.answers[i]])}</div><div class="item-meta">Correct answer: ${esc(q.o[q.a])}</div><p class="muted">${esc(q.why)}</p></div>`).join("")}<button class="primary full" data-action="quiz-save" data-score="${score}" data-total="${qs.length}">Save result & see analytics</button><button class="secondary full" style="margin-top:8px" data-action="quiz-again">Try another quiz</button>`,"span-12")}</div>`;
+   return
+  }
+  const q=qs[idx],selected=quizState.selected;
+  el.innerHTML=`<div class="grid">${card("Quiz Lab",`<div class="flex between"><span class="tag">Question ${idx+1} of ${qs.length}</span><span class="tag">${esc(q.topic)}</span></div><div class="meter"><span style="width:${pct(idx,qs.length)}%"></span></div><h2 style="margin-top:22px">${esc(q.q)}</h2>${q.o.map((o,i)=>`<button class="option ${selected===i?(i===q.a?"correct":"wrong"):""}" data-action="quiz-answer" data-index="${i}" ${selected!==null?"disabled":""}>${"ABCD"[i]}. ${esc(o)}</button>`).join("")}${selected!==null?`<div class="card"><b>${selected===q.a?"Correct!":"Not quite."}</b><p class="muted">${esc(q.why)}</p><button class="primary full" data-action="quiz-next">${idx===qs.length-1?"See results":"Next question →"}</button>`:""}`,"span-12")}</div>`;
+  return
+ }
+ el.innerHTML=`<div class="grid">
+ ${card("Practice quiz engine",`<p class="muted">Generate a short multiple-choice quiz from the built-in school topic bank. Answers are marked instantly and explanations appear after each question.</p><label>Quiz length</label><select id="quizLength"><option value="5">5 questions</option><option value="10">10 questions</option></select><button class="primary full" data-action="quiz-start">Generate & start quiz</button><div class="item-meta" style="margin-top:12px">This quiz bank is built in. It does not automatically understand arbitrary uploaded documents.</div>`,"span-6")}
+ ${card("Quiz history",data.quizzes.length?data.quizzes.slice(-8).reverse().map(q=>`<div class="item flex between"><div><b>${q.score}/${q.total}</b><div class="item-meta">${dateLabel(q.date)}</div></div><span class="tag">${pct(q.score,q.total)}%</span></div>`).join(""):`<div class="empty">Your completed quiz scores will appear here.</div>`,"span-6")}
+ </div>`;
+}
+function renderFocus(){
+ document.getElementById("page-focus").innerHTML=`<div class="grid">
+ ${card("Focus Room",`<div class="eyebrow">SINGLE-TASK MODE</div><div id="timerDisplay" class="big-number" style="font-size:clamp(48px,10vw,76px);text-align:center;margin:28px 0">${clock(secondsLeft)}</div><div class="meter"><span id="timerMeter" style="width:${100-secondsLeft/(25*60)*100}%"></span></div><div class="flex" style="justify-content:center"><button class="primary" data-action="timer-toggle" id="timerToggle">${running?"Pause":"Start focus"}</button><button class="secondary" data-action="timer-reset">Reset</button></div><div class="flex" style="justify-content:center;margin-top:14px">${[15,25,45].map(n=>`<button class="chip" data-action="timer-set" data-minutes="${n}">${n} min</button>`).join("")}</div><p class="muted" style="text-align:center;margin-top:18px">Choose one task. Put away distractions. Take a short break after your session.</p>`,"span-7")}
+ ${card("Session log",`<div class="big-number">${fmtMins(data.focusMinutes)}</div><div class="muted">Total completed focus minutes</div><hr>${data.sessions.slice(-7).reverse().map(s=>`<div class="item flex between"><span>${dateLabel(s.date)}</span><b>${s.minutes} min</b></div>`).join("")||`<div class="empty">Completed sessions will appear here.</div>`}`,"span-5")}
+ </div>`;
+}
+function clock(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function timerDisplay(){
+ const d=document.getElementById("timerDisplay"),m=document.getElementById("timerMeter"),b=document.getElementById("timerToggle");
+ if(d)d.textContent=clock(secondsLeft);
+ if(m)m.style.width=(100-secondsLeft/Math.max(1,timerTotal)*100)+"%";
+ if(b)b.textContent=running?"Pause":"Start focus"
+}
+let timerTotal=25*60;
+function stopTimer(){if(timer)clearInterval(timer);timer=null;running=false}
+function tick(){
+ secondsLeft--;timerDisplay();
+ if(secondsLeft<=0){
+  stopTimer();secondsLeft=0;timerDisplay();
+  data.focusMinutes+=Math.round(timerTotal/60);
+  data.sessions.push({id:uid(),date:today(),minutes:Math.round(timerTotal/60),type:"focus"});
+  save();notify("Focus session complete. Take a short break!");renderFocus()
+ }
+}
+function renderAnalytics(){
+ const total=data.sessions.reduce((n,s)=>n+s.minutes,0),done=data.tasks.filter(t=>t.done).length;
+ const topics=Object.entries(data.topicStats);
+ document.getElementById("page-analytics").innerHTML=`<div class="grid">
+ ${stat("◷","Total study time",fmtMins(total),"From completed focus sessions")}
+ ${stat("✓","Tasks completed",done,`of ${data.tasks.length} total tasks`)}
+ ${stat("▧","Flashcards",data.cards.length,"Saved for active recall")}
+ ${card("Study activity",`<div class="item-meta">Last 7 days</div>${Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const key=d.toISOString().slice(0,10);const n=data.sessions.filter(s=>s.date===key).reduce((a,s)=>a+s.minutes,0);return `<div class="item"><div class="flex between"><span>${d.toLocaleDateString(undefined,{weekday:"short",day:"numeric"})}</span><b>${n} min</b></div><div class="meter"><span style="width:${Math.min(100,n/Math.max(1,data.settings.dailyGoal)*100)}%"></span></div></div>`}).join("")}`,"span-7")}
+ ${card("Topic confidence",`${topics.length?topics.map(([t,v])=>`<div class="item"><div class="flex between"><b>${esc(t)}</b><span>${v.confidence}/5</span></div><div class="meter"><span style="width:${v.confidence*20}%"></span></div></div>`).join(""):`<div class="empty">Add topic confidence ratings below.</div>`}<hr><form id="topicForm"><label>Topic</label><input name="topic" required placeholder="e.g. Fractions"><label>Confidence (1 = difficult, 5 = confident)</label><select name="confidence"><option value="1">1 — Need help</option><option value="2">2 — Difficult</option><option value="3" selected>3 — Getting there</option><option value="4">4 — Confident</option><option value="5">5 — Very confident</option></select><button class="primary full">Update topic confidence</button></form>`,"span-5")}
+ ${card("Revision coach",`${topics.length?topics.slice().sort((a,b)=>a[1].confidence-b[1].confidence).slice(0,3).map(([t,v])=>`<div class="item"><span class="tag ${v.confidence<=2?"pink":"cyan"}">${v.confidence<=2?"Priority revision":"Review soon"}</span><div class="item-title" style="margin-top:7px">${esc(t)}</div><div class="item-meta">Confidence ${v.confidence}/5 · practise and reassess</div></div>`).join(""):`<p class="muted">Rate your confidence in topics to create a personalised revision list.</p>`}`,"span-12")}
+ </div>`;
+ document.getElementById("topicForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target),topic=f.get("topic").trim();
+  data.topicStats[topic]={confidence:+f.get("confidence"),updated:today()};save();renderAnalytics();notify("Revision profile updated")
+ }
+}
+function renderPro(){
+ document.getElementById("page-pro").innerHTML=`<div class="grid">
+ ${card("STUDYOS <span class='brand-gradient'>PRO</span>",`<div class="eyebrow">YOUR STUDY WORKSPACE, UPGRADED</div><h1>Study with<br><span class="brand-gradient">more intelligence.</span></h1><div class="big-number">₹49 <span class="muted" style="font-size:15px">/ month</span></div><p class="muted">Pro concept preview. No payments are connected in this offline version.</p><hr><div class="stack">${["Unlimited saved notes and flashcards","Advanced topic confidence and revision insights","Expanded quiz and practice tools","Exportable study reports","Extra study themes and organisation tools"].map(x=>`<div class="flex"><span style="color:var(--cyan)">✦</span>${x}</div>`).join("")}</div><hr><span class="tag pink">DEMO ONLY · NO PAYMENT PROCESSING</span><p class="muted" style="margin-top:12px">The Pro preview can toggle locally to let you test the interface. It does not charge money, create a real subscription, or verify a payment.</p><button class="primary full" data-action="pro-toggle">${isPro()?"Turn off Pro preview":"Enable Pro preview (free demo)"}</button>`,"span-7")}
+ ${card("Free vs Pro",`<div class="item"><b>Free</b><div class="item-meta">Planner, offline tutor, focus timer, quizzes, and up to 20 notes and 50 flashcards.</div></div><div class="item"><b>Pro preview</b><div class="item-meta">Removes the local note/card limits and displays the advanced-feature preview.</div></div><div class="item"><b>Important</b><div class="item-meta">Real billing, accounts, cloud sync and online AI would require additional services. They are not included here.</div></div>`,"span-5")}
+ </div>`;
+}
+function renderSettings(){
+ document.getElementById("page-settings").innerHTML=`<div class="grid">
+ ${card("Your profile",`<form id="profileForm"><label>Name</label><input name="name" maxlength="60" value="${esc(data.name)}" required><label>Age</label><input name="age" type="number" min="5" max="100" value="${esc(data.age)}" required><label>Daily study goal (minutes)</label><input name="goal" type="number" min="15" max="720" value="${data.settings.dailyGoal}"><button class="primary full">Save preferences</button></form>`,"span-6")}
+ ${card("Your data",`<p class="muted">Your notes, tasks, profile, quiz history and settings are saved in this browser's local storage. Clearing browser data may erase them.</p><div class="stack"><button class="secondary full" data-action="export">Export backup (.json)</button><label>Restore a backup</label><input type="file" id="importFile" accept=".json,application/json"><button class="secondary full" data-action="import">Import backup</button><button class="danger full" data-action="clear-data">Delete all local data</button></div>`,"span-6")}
+ ${card("Privacy",`<p class="muted">This app does not send your notes to a server. The offline tutor uses a built-in set of explanations. This static website has no account system, cloud sync, or remote AI API.</p><button class="secondary full" data-action="privacy">Read privacy information</button>`,"span-12")}
+ </div>`;
+ document.getElementById("profileForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  data.name=f.get("name").trim();data.age=f.get("age");data.settings.dailyGoal=+f.get("goal")||120;save();
+  document.getElementById("avatar").textContent=data.name[0].toUpperCase();renderSettings();notify("Preferences saved")
+ }
+}
+function actions(a,el){
+ const id=a.dataset.id;
+ switch(a.dataset.action){
+ case "toggle-task":{const t=data.tasks.find(t=>t.id===id);if(t)t.done=el.checked;save();renderTasks();break}
+ case "delete-task":data.tasks=data.tasks.filter(t=>t.id!==id);save();renderTasks();break;
+ case "delete-note":data.notes=data.notes.filter(n=>n.id!==id);save();renderNotes();notify("Note deleted");break;
+ case "delete-card":data.cards=data.cards.filter(c=>c.id!==id);cardIndex=0;save();renderFlashcards();break;
+ case "note-to-card":{const n=data.notes.find(n=>n.id===id);if(n){data.cards.push({id:uid(),front:n.title,back:n.body,subject:n.subject,confidence:0});save();notify("Flashcard created from note")}break}
+ case "note-to-quiz":{const n=data.notes.find(n=>n.id===id);if(n){notify("Note ready. Create practice questions from its key ideas in Quiz Lab.");go("quiz")}break}
+ case "ask-prompt":ask(a.dataset.prompt);break;
+ case "clear-chat":data.tutorHistory=[];save();renderTutor();break;
+ case "card-prev":cardIndex=(cardIndex-1+data.cards.length)%data.cards.length;cardBack=false;renderFlashcards();break;
+ case "card-next":cardIndex=(cardIndex+1)%data.cards.length;cardBack=false;renderFlashcards();break;
+ case "card-flip":cardBack=!cardBack;renderFlashcards();break;
+ case "card-known":{const c=data.cards.find(c=>c.id===id);if(c)c.confidence=Math.min(5,(c.confidence||0)+1);save();notify("Card marked for review progress");break}
+ case "quiz-start":{const n=+(document.getElementById("quizLength")?.value||5);const shuffled=[...quizBank].sort(()=>Math.random()-.5);quizState={questions:shuffled.slice(0,n),idx:0,selected:null,answers:[]};renderQuiz();break}
+ case "quiz-answer":{if(!quizState||quizState.selected!==null)return;quizState.selected=+a.dataset.index;quizState.answers[quizState.idx]=quizState.selected;renderQuiz();break}
+ case "quiz-next":quizState.idx++;quizState.selected=null;renderQuiz();break;
+ case "quiz-again":quizState=null;renderQuiz();break;
+ case "quiz-save":data.quizzes.push({date:today(),score:+a.dataset.score,total:+a.dataset.total});save();quizState=null;renderAnalytics();go("analytics");notify("Quiz result saved");break;
+ case "timer-toggle":if(running){stopTimer()}else{running=true;timer=setInterval(tick,1000)}timerDisplay();break;
+ case "timer-reset":stopTimer();secondsLeft=timerTotal;timerDisplay();break;
+ case "timer-set":stopTimer();timerTotal=+(a.dataset.minutes)*60;secondsLeft=timerTotal;timerDisplay();break;
+ case "pro-toggle":data.pro=!isPro();data.proDemo=data.pro;save();renderPro();notify(data.pro?"Pro demo enabled — no payment made":"Pro demo disabled");break;
+ case "export":exportData();break;
+ case "import":importData();break;
+ case "clear-data":if(confirm("Permanently delete all STUDYOS data stored in this browser? Export a backup first if needed.")){localStorage.removeItem(KEY);stopTimer();data={...defaults};quizState=null;showOnboarding(true)}break;
+ case "privacy":showPrivacyInApp();break;
+ }
+}
+function exportData(){
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),link=document.createElement("a");
+ link.href=url;link.download="studyos-backup-"+today()+".json";link.click();URL.revokeObjectURL(url);notify("Backup exported")
+}
+function importData(){
+ const input=document.getElementById("importFile"),file=input?.files?.[0];
+ if(!file){notify("Choose a backup JSON file first");return}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const imported=JSON.parse(reader.result);
+   if(!imported||typeof imported!=="object"||!Array.isArray(imported.tasks)||!Array.isArray(imported.notes)||!Array.isArray(imported.cards))throw Error("Invalid backup");
+   if(!confirm("Replace current local data with this backup?"))return;
+   data={...defaults,...imported,settings:{...defaults.settings,...imported.settings}};
+   save();notify("Backup restored");go("dashboard")
+  }catch(e){notify("That backup file could not be read")}
+ };
+ reader.readAsText(file)
+}
+function showPrivacyInApp(){
+ const content=document.getElementById("onContent"),on=document.getElementById("onboarding"),app=document.getElementById("application");
+ app.classList.add("hidden");on.classList.remove("hidden");
+ content.innerHTML=`<div class="eyebrow">PRIVACY INFORMATION</div><h1>Your data, <span class="brand-gradient">your device.</span></h1><p>STUDYOS is a static web app. It stores your profile, notes, tasks and progress in this browser's local storage.</p><ul class="muted"><li>No login or server database is included.</li><li>The tutor uses built-in responses, not a remote AI model.</li><li>Export your data before clearing browser storage.</li><li>Anyone with access to this browser profile may be able to use the app or inspect its local data.</li></ul><p class="muted">If the website is hosted on GitHub Pages, the hosting provider may process ordinary website request data. This app itself does not send your study notes to a backend.</p><button class="primary full" id="returnApp">Return to STUDYOS</button>`;
+ document.getElementById("returnApp").onclick=()=>{on.classList.add("hidden");app.classList.remove("hidden");go("settings")}
+}
+let onboardStep=0;
+function showOnboarding(reset=false){
+ document.getElementById("application").classList.add("hidden");
+ document.getElementById("onboarding").classList.remove("hidden");
+ if(reset){data={...defaults};save()}
+ onboardStep=0;renderOnboarding()
+}
+function renderOnboarding(){
+ const c=document.getElementById("onContent"),p=document.getElementById("onProgress");
+ p.style.width=([25,50,75,100][onboardStep])+"%";
+ if(onboardStep===0){
+ c.innerHTML=`<div class="eyebrow">STEP 1 OF 4 · PERSONALISE</div><h1>Meet your new<br><span class="brand-gradient">study system.</span></h1><p class="muted">Let's personalise your workspace. Your information stays in this browser.</p><label>What should we call you?</label><input id="onName" maxlength="60" placeholder="Your first name" value="${esc(data.name==="Student"?"":data.name)}"><label>How old are you?</label><input id="onAge" type="number" min="5" max="100" placeholder="Your age" value="${esc(data.age)}"><button class="primary full" id="onNext">Continue →</button><p class="item-meta" style="margin-top:14px">No account · No API key · No backend</p>`;
+ document.getElementById("onNext").onclick=()=>{
+  const name=document.getElementById("onName").value.trim(),age=+document.getElementById("onAge").value;
+  if(!name||!age||age<5||age>100){notify("Enter a name and a valid age to continue");return}
+  data.name=name;data.age=String(age);save();onboardStep=1;renderOnboarding()
+ };
+ }else if(onboardStep===1){
+ c.innerHTML=`<div class="eyebrow">STEP 2 OF 4 · ABOUT</div><h1>More than a<br><span class="brand-gradient">to-do list.</span></h1><p class="muted">STUDYOS brings your learning workflow together.</p><div class="stack"><div class="item"><b>✧ Offline study tutor</b><div class="item-meta">Built-in explanations and guided learning for supported topics.</div></div><div class="item"><b>◈ Smart revision engine</b><div class="item-meta">Recommendations based on your tasks, topic confidence and progress.</div></div><div class="item"><b>✓ Quiz and flashcard lab</b><div class="item-meta">Practise, check your answers and track results.</div></div><div class="item"><b>◷ Focus room</b><div class="item-meta">Use a focus timer and record completed study sessions.</div></div></div><button class="primary full" id="onNext">Continue →</button><button class="secondary full" style="margin-top:8px" id="onBack">← Back</button>`;
+ document.getElementById("onNext").onclick=()=>{onboardStep=2;renderOnboarding()};
+ document.getElementById("onBack").onclick=()=>{onboardStep=0;renderOnboarding()};
+ }else if(onboardStep===2){
+ c.innerHTML=`<div class="eyebrow">STEP 3 OF 4 · PRIVACY</div><h1>Your workspace.<br><span class="brand-gradient">Your control.</span></h1><p>STUDYOS is designed to work without an account or remote AI service.</p><div class="card"><b>What is stored?</b><p class="muted">Your name, age, tasks, notes, flashcards, quiz results and preferences are stored in local browser storage.</p><b>What is not included?</b><p class="muted">No cloud backup, account login, remote AI model or real subscription payment processing.</p><b>Keep in mind</b><p class="muted">Other people using the same browser profile may be able to access local app data. Export a backup before clearing your browser data.</p></div><label style="display:flex;gap:9px;align-items:flex-start;margin:15px 0"><input type="checkbox" id="privacyCheck" style="width:18px;margin:2px 0 0"><span>I understand how local storage and the offline tutor work.</span></label><button class="primary full" id="onNext">Continue →</button><button class="secondary full" style="margin-top:8px" id="onBack">← Back</button>`;
+ document.getElementById("onNext").onclick=()=>{if(!document.getElementById("privacyCheck").checked){notify("Please confirm that you understand the privacy information");return}data.privacyAccepted=true;save();onboardStep=3;renderOnboarding()};
+ document.getElementById("onBack").onclick=()=>{onboardStep=1;renderOnboarding()};
+ }else{
+ c.innerHTML=`<div style="text-align:center;padding:15px 0"><div class="logo" style="justify-content:center"><div class="logo-icon">S</div> STUDY<span class="brand-gradient">OS</span></div><div style="font-size:55px;margin:26px">✦</div><div class="eyebrow">YOUR WORKSPACE IS READY</div><h1>Let's make progress,<br><span class="brand-gradient">${esc(data.name)}.</span></h1><p class="muted">Plan smarter. Practise actively. Build consistent habits.</p><button class="primary full" id="launch">Open my study workspace →</button><button class="secondary full" style="margin-top:8px" id="onBack">← Review privacy</button></div>`;
+ document.getElementById("launch").onclick=()=>{
+  data.onboarded=true;save();document.getElementById("onboarding").classList.add("hidden");document.getElementById("application").classList.remove("hidden");
+  document.getElementById("avatar").textContent=data.name[0].toUpperCase();go("dashboard")
+ };
+ document.getElementById("onBack").onclick=()=>{onboardStep=2;renderOnboarding()}
+ }
+}
+if(data.onboarded){
+ document.getElementById("onboarding").classList.add("hidden");
+ document.getElementById("application").classList.remove("hidden");
+ document.getElementById("avatar").textContent=(data.name||"S")[0].toUpperCase();
+ go("dashboard")
+}else showOnboarding();
+</script>
+</body>
+</html>
